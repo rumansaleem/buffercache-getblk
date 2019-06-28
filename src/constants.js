@@ -1,0 +1,8 @@
+export const IO_TYPE_READ = 'IO_TYPE_READ';
+export const IO_TYPE_WRITE = 'IO_TYPE_WRITE';
+
+export const STATUS_RUNNING = 'RUNNING';
+export const STATUS_PAUSED = 'PAUSED';
+export const STATUS_IDLE = 'IDLE';
+export const STATUS_SLEEPING_FOR_ANY_BUFFER = 'SLEEP_FOR_ANY_BUFFER';
+export const STATUS_SLEEPING_FOR_SPECIFIC_BUFFER = (id) => `SLEEP_FOR_BUFFER_${id}`;

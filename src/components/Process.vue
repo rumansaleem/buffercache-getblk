@@ -38,17 +38,17 @@
     </div>
 </template>
 <script>
-import { READ_IO, WRITE_IO } from '../buffercache/process';
-import { mapMutations, mapActions, mapGetters } from 'vuex';
+import { IO_TYPE_READ, IO_TYPE_WRITE } from '../constants';
+import { mapActions, mapGetters } from 'vuex';
 export default {
     props: {
         process: {required: true}
     },
     data() {
         return {
-            ioTypeOptions: {'Read': READ_IO, 'Write': WRITE_IO},
+            ioTypeOptions: {'Read': IO_TYPE_READ, 'Write': IO_TYPE_WRITE},
             blockNumber: '',
-            io_type: READ_IO,
+            io_type: IO_TYPE_READ,
             data: '',
         }
     },

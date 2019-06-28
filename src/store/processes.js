@@ -1,8 +1,8 @@
-export const STATUS_RUNNING = 'RUNNING';
-export const STATUS_PAUSED = 'PAUSED';
-export const STATUS_IDLE = 'IDLE';
-export const STATUS_SLEEPING_FOR_ANY_BUFFER = 'SLEEP_FOR_ANY_BUFFER';
-export const STATUS_SLEEPING_FOR_SPECIFIC_BUFFER = (id) => `SLEEP_FOR_BUFFER_${id}`;
+import {
+    STATUS_IDLE,
+    STATUS_PAUSED,
+    STATUS_RUNNING,
+} from '../constants';
 
 let createIORequest = (id, blockNumber, io_type, data = null) => ({
     id,
