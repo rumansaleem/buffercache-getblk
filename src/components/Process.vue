@@ -51,11 +51,6 @@
 import { 
     IO_TYPE_READ,
     IO_TYPE_WRITE,
-    STATUS_RUNNING,
-    STATUS_WAITING_FOR_ANY_BUFFER,
-    STATUS_WAITING_FOR_SPECIFIC_BUFFER,
-    STATUS_IDLE,
-    STATUS_SLEEPING,
 } from '../constants';
 import { mapActions, mapGetters } from 'vuex';
 export default {
