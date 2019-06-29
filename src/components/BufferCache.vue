@@ -14,7 +14,7 @@
                     <span class="text-xs " v-text="buffer.id"></span>
                     <span class="text-xs font-semibold text-teal-600" v-text="buffer.blockNumber || 'NA'"></span>
                 </div>
-                <span class="font-mono text-xs px-2 py-1" v-text="buffer.data || '<empty>'"></span>
+                <span class="font-mono text-xs px-2 py-1" v-text="buffer.blockNumber ? buffer.data || '<empty>' : 'NULL'"></span>
             </span>
         </div>
         <p class="mb-1">Hash Queue</p>
