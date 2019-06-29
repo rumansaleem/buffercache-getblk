@@ -25,12 +25,12 @@ const actions = {
                 }
     
                 //Scenario 3
-                // commit('WAIT_FOR_SPECIFIC_BUFFER', {process, buffer});
+                commit('processes/WAIT_FOR_SPECIFIC_BUFFER', {process, buffer}, {root: true});
                 return resolve(false);
             }
 
             if (rootGetters['buffercache/freelist/isEmpty']) {
-                // commit('WAIT_FOR_ANY_BUFFER', { process });
+                commit('processes/WAIT_FOR_ANY_BUFFER', process, {root: true});
                 return resolve(false);
                 // this.eventBus.sleep(EventBus.EVENT_WAIT_ANY_BUFFER);
                 // this.eventBus.clear(EventBus.EVENT_WAIT_ANY_BUFFER);
@@ -38,13 +38,14 @@ const actions = {
             }
     
             let buffer = await dispatch('buffercache/freelist/POP', null, {root: true});
+            commit('buffercache/LOCK_BUFFER', buffer, {root:true});
 
             if (buffer.delayWrite) {
-                dispatch('bwrite', {buffer, synchronous: false});
-                return resolve(false);
+                dispatch('bwrite', {buffer, synchronous: false})
+                    .then(() => dispatch('brelse', buffer));
+                return dispatch('getblk', {process, blockNumber});
             }
     
-            commit('buffercache/LOCK_BUFFER', buffer, {root:true});
             const oldBlockNumber = buffer.blockNumber;
             commit('buffercache/REASSIGN_BUFFER', {buffer, blockNumber}, { root: true });
             await dispatch('buffercache/hashqueue/REASSEMBLE', {buffer, oldBlockNumber}, {root:true});
@@ -53,8 +54,9 @@ const actions = {
     },
 
     brelse({ commit, rootGetters }, buffer) {
-        // commit('WAKE_SLEEPING_FOR_ANY_BUFFER');
-        // commit('WAKE_SLEEPING_FOR_SPECIFIC_BUFFER', buffer);
+        commit('processes/WAKE_WAITING_FOR_ANY_BUFFER', null, {root: true});
+        commit('processes/WAKE_WAITING_FOR_SPECIFIC_BUFFER', buffer, {root: true});
+
         const isDataValid = rootGetters['buffercache/isDataValid'];
         const isOld = rootGetters['buffercache/isOld'];
 
@@ -74,30 +76,29 @@ const actions = {
             let buffer = await dispatch('getblk', {process, blockNumber});
     
             if(!buffer) {
-                return resolve(false);
+                return setTimeout(resolve, 1000, false);
             }
     
             if (rootGetters['buffercache/isDataValid'](buffer)) {
-                return resolve(buffer);
+                return setTimeout(resolve, 1000, buffer);
             }
             
             // # initiate synchronous disk read
             const data = await dispatch('disk/READ', buffer.blockNumber, {root:true});
-            commit('buffercache/READ_IN_BUFFER', {buffer,data}, {root: true});
-            return resolve(buffer);
-    
+            commit('buffercache/READ_IN_BUFFER', { buffer, data }, {root: true});
+            return setTimeout(resolve, 1000, buffer);
         }) ;
     },
     
     async bwrite({dispatch, commit, rootGetters}, {buffer, synchronous = false}) {
             const isDelayedWrite = rootGetters['buffercache/isDelayedWrite'];
             if (synchronous) {
-                await dispatch('disk/WRITE_BUFFER', buffer);
+                await dispatch('disk/WRITE', buffer, {root: true});
                 return this.brelse(buffer);
             }
-            dispatch('disk/WRITE_BUFFER', buffer).then(null);
+            dispatch('disk/WRITE', buffer, {root: true}).then(null);
             if (isDelayedWrite(buffer)) {
-                commit('buffercache/MARK_AS_OLD', buffer, {root: true})
+                commit('buffercache/MARK_BUFFER_OLD', buffer, {root: true})
             }
         }
     }
