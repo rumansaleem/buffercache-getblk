@@ -42,8 +42,8 @@ const actions = {
 
             if (buffer.delayWrite) {
                 dispatch('bwrite', {buffer, synchronous: false})
-                    .then(() => dispatch('brelse', buffer));
-                return dispatch('getblk', {process, blockNumber});
+                    .then(() => setTimeout(dispatch, 0, 'brelse', buffer));
+                return resolve( await dispatch('getblk', {process, blockNumber}));
             }
     
             const oldBlockNumber = buffer.blockNumber;
