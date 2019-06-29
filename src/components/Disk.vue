@@ -1,6 +1,10 @@
 <template>
     <div>
-        <h4 class="text-xl mb-4">Secondary Memory</h4>
+        <h4 class="text-xl mb-3">Secondary Memory</h4>  
+        <div class="mb-4">
+            <strong class="text-xs uppercase mr-2">status</strong>
+            <span class="text-teal-600 font-bold" v-text="statusText"></span>
+        </div>
         <p class="mb-1">Disk Blocks</p>
         <div id="buffer-list" class="flex flex-wrap items-center -m-1 font-mono leading-none">
             <div v-for="block in blocks"
@@ -20,7 +24,13 @@ import { INITIALISE } from '../store/disk';
 export default {
     name: 'disk',
     computed: {
-        ...mapState('disk', ['blocks'])
+        ...mapState('disk', ['blocks', 'isReading', 'isWriting']),
+        statusText() {
+            return this.isReading ? 'Reading Block...' 
+                : ( this.isWriting ? 'Writing Block...'
+                    : 'Idle!'
+                );
+        }
     },
     methods: {
         ...mapMutations('disk', [ INITIALISE ])
